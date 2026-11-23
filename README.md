@@ -76,19 +76,66 @@ Once connected:
 
 ---
 
-## Enabling Tailscale HTTPS (Tailscale Serve)
+## Enabling Tailscale HTTPS (Tailscale Serve vs Funnel)
 
-If you want automatic Let's Encrypt HTTPS under your Tailnet's `.ts.net` domain:
+Tailscale provides two ways to expose your website securely:
 
-1. Enable **HTTPS Certificates** in your Tailscale Admin Console (DNS section).
-2. Run this command inside the running `tailscale` container:
-   ```bash
-   docker compose exec tailscale tailscale serve --bg 80
+| Feature | Access Scope | URL |
+|---|---|---|
+| **Tailscale Serve** | **Private** (devices connected to your Tailnet only) | `https://inquis-website.<tailnet>.ts.net` |
+| **Tailscale Funnel** | **Public** (anyone on the open internet) | `https://inquis-website.<tailnet>.ts.net` |
+
+### 1. Tailscale Serve (Private HTTPS)
+Exposes the site over HTTPS within your private Tailnet:
+```bash
+docker compose exec tailscale tailscale serve --bg 80
+```
+To check status:
+```bash
+docker compose exec tailscale tailscale serve status
+```
+To disable:
+```bash
+docker compose exec tailscale tailscale serve reset
+```
+
+---
+
+### 2. Tailscale Funnel (Public Internet HTTPS)
+Exposes the site securely to the **public internet** with automatic Let's Encrypt certificates:
+
+#### Prerequisite: Enable Funnel in Tailscale ACLs
+1. Open [Tailscale Admin Console → Access Controls](https://login.tailscale.com/admin/acls).
+2. Ensure `nodeAttrs` grants Funnel permission:
+   ```json
+   "nodeAttrs": [
+     {
+       "target": ["autogroup:member"],
+       "attr": ["funnel"]
+     }
+   ]
    ```
-3. Your site will now be accessible at:
-   ```text
-   https://inquis-website.<your-tailnet-name>.ts.net
-   ```
+3. Enable **HTTPS Certificates** under [Tailscale Admin Console → DNS](https://login.tailscale.com/admin/dns).
+
+#### Turn On Funnel
+```bash
+docker compose exec tailscale tailscale funnel --bg 80
+```
+*(Optionally specify target explicitly: `docker compose exec tailscale tailscale funnel --bg 443 on`)*
+
+#### Check Funnel Status
+```bash
+docker compose exec tailscale tailscale funnel status
+```
+
+#### Turn Off Funnel
+```bash
+# Turn off Funnel on port 80 / 443
+docker compose exec tailscale tailscale funnel 80 off
+
+# Or reset all serve/funnel mappings
+docker compose exec tailscale tailscale funnel reset
+```
 
 ---
 
