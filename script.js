@@ -52,7 +52,7 @@ function unlockScrollIfNeeded(){
   const modalOpen = document.getElementById('prodOverlay')?.classList.contains('open');
   const drawerOpen = document.getElementById('drawer')?.classList.contains('open');
   const mobNavOpen = document.getElementById('mobNav')?.classList.contains('open');
-  if (!modalOpen && !drawerOpen && !mobNavOpen) {
+  if (!modalOpen && !drawerOpen && !mobNavOpen && document.body) {
     document.body.style.overflow = '';
   }
 }
@@ -180,6 +180,9 @@ function cardHTML(p,i){
       <span class="card-ico">${icon(cat.icon)}</span><span class="media-model">${p.models[0]}</span></div>`;
   }
   const cert=(p.certs||[]).map(c=>`<span class="chip-cert">${c}</span>`).join('');
+  const inCart=cart.find(c=>c.id===p.id);
+  const btnClass=inCart?'btn-add in-cart':'btn-add';
+  const btnContent=inCart?`${icon('check')} Added (${inCart.qty})`:`${icon('plus')} Enquire`;
   return `<div class="card reveal ${'d'+(i%4)} ${p.featured?'featured-ribbon':''}" role="button" tabindex="0" aria-label="View ${p.name} details" onclick="openModal('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${p.id}');}">
     ${media}<div class="card-cert">${cert}</div>
     <div class="card-body">
@@ -189,7 +192,7 @@ function cardHTML(p,i){
       <div class="card-tags">${tags}</div>
       <div class="card-foot">
         <span class="models-n">${nModels} model${nModels>1?'s':''}</span>
-        <button class="btn-add" onclick="event.stopPropagation();addToCart('${p.id}')">${icon('plus')} Enquire</button>
+        <button class="${btnClass}" data-prod-id="${p.id}" onclick="event.stopPropagation();addToCart('${p.id}')">${btnContent}</button>
       </div>
     </div></div>`;
 }
@@ -269,7 +272,7 @@ function openModal(id, pushHistory = true){
         <p class="msub">${p.subtitle}</p>
         <div class="cert-row">${certs}${p.brand?`<span class="cert-badge">${icon('award')}${p.brand}</span>`:''}</div>
         <div class="modal-actions">
-          <button class="btn btn-add-lg" onclick="addToCart('${p.id}');updateModalBtn()">${icon('plus')} Add to Enquiry</button>
+          <button class="${cart.find(c=>c.id===p.id)?'btn btn-add-lg in-cart':'btn btn-add-lg'}" id="modalAddBtn" onclick="addToCart('${p.id}')">${cart.find(c=>c.id===p.id)?`${icon('check')} In Enquiry (${cart.find(c=>c.id===p.id).qty}) — Add More`:`${icon('plus')} Add to Enquiry`}</button>
           <a class="btn btn-wa" href="https://wa.me/919901141444?text=${encodeURIComponent('Hi, I would like a quote for '+p.name+' ('+p.models.join(', ')+')')}" target="_blank">${icon('chat')} Quick Quote</a>
         </div>
       </div>
@@ -309,7 +312,33 @@ function switchTab(e,id){
   document.querySelectorAll('.mtab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function updateModalBtn(){} // hook for future
+function updateModalBtn(){
+  if (!modalProd) return;
+  const btn = document.getElementById('modalAddBtn');
+  if (!btn) return;
+  const inCart = cart.find(c => c.id === modalProd.id);
+  if (inCart) {
+    btn.className = 'btn btn-add-lg in-cart';
+    btn.innerHTML = `${icon('check')} In Enquiry (${inCart.qty}) — Add More`;
+  } else {
+    btn.className = 'btn btn-add-lg';
+    btn.innerHTML = `${icon('plus')} Add to Enquiry`;
+  }
+}
+
+function updateCardButtons(){
+  document.querySelectorAll('.btn-add[data-prod-id]').forEach(btn => {
+    const id = btn.dataset.prodId;
+    const inCart = cart.find(c => c.id === id);
+    if (inCart) {
+      btn.classList.add('in-cart');
+      btn.innerHTML = `${icon('check')} Added (${inCart.qty})`;
+    } else {
+      btn.classList.remove('in-cart');
+      btn.innerHTML = `${icon('plus')} Enquire`;
+    }
+  });
+}
 
 /* ============ CART / ENQUIRY ============ */
 function addToCart(id){
@@ -326,10 +355,22 @@ function changeQty(id,d){const c=cart.find(x=>x.id===id);if(!c)return;c.qty=Math
 function setModel(id,m){const c=cart.find(x=>x.id===id);if(c){c.model=m;saveCart();}}
 function cartCount(){return cart.reduce((s,c)=>s+c.qty,0);}
 function updateCartUI(){
-  const n=cartCount();const b=document.getElementById('cartBadge');
-  b.textContent=n;b.classList.toggle('show',n>0);
+  const n=cartCount();
+  const b=document.getElementById('cartBadge');
+  if(b){
+    b.textContent=n;
+    b.classList.toggle('show',n>0);
+  }
+  updateCardButtons();
+  updateModalBtn();
 }
-function pulseCart(){const b=document.getElementById('cartBadge');b.style.transform='scale(0)';setTimeout(()=>b.classList.add('show'),10);}
+function pulseCart(){
+  const b=document.getElementById('cartBadge');
+  if(!b) return;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+}
 
 function openDrawer(){renderDrawer();document.getElementById('drawer').classList.add('open');document.getElementById('drawerOverlay').classList.add('open');document.body.style.overflow='hidden';}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');unlockScrollIfNeeded();}
