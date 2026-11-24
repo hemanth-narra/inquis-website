@@ -42,6 +42,37 @@ let catFilter='all', catQuery='', globalQuery='';
 function loadCart(){try{return JSON.parse(localStorage.getItem('inquis_cart')||'[]')}catch(e){return[]}}
 function saveCart(){try{localStorage.setItem('inquis_cart',JSON.stringify(cart))}catch(e){}}
 
+/* ============ SEO & VIEW CONFIG ============ */
+const VIEW_SEO = {
+  home: {
+    title: 'Inquis Life Care Sciences — Medical Equipment, Accessories & Consumables | Hyderabad, India',
+    desc: 'Inquis Life Care Sciences LLP is an authorized distributor of hospital & medical equipment across India. Patient monitors, 12-lead ECG machines, defibrillators, BiPAP ventilators, OT lights, and neonatal care in Hyderabad, Telangana.'
+  },
+  catalog: {
+    title: 'Medical Equipment Catalog & Hospital Supplies | Inquis Life Care Sciences',
+    desc: 'Browse our complete catalog of 36+ hospital medical devices across 8 categories: ICU patient monitors, ECG machines, BiPAP/CPAP ventilators, defibrillators, surgical ESU, and neonatal equipment.'
+  },
+  about: {
+    title: 'About Us — Inquis Life Care Sciences | Healthcare Technology Partner',
+    desc: 'Founded by inquisitive doctors, Inquis Life Care Sciences is an authorized distributor and partner delivering high-quality, certified medical technologies to hospitals pan-India.'
+  },
+  contact: {
+    title: 'Contact Us & Request a Quote — Inquis Life Care Sciences | Hyderabad',
+    desc: 'Get in touch with Inquis Life Care Sciences for medical equipment quotes, product demos, and after-sales service. Reach our office in Balkampet, Hyderabad.'
+  }
+};
+
+function updateViewSEO(view){
+  const meta = VIEW_SEO[view] || VIEW_SEO.home;
+  document.title = meta.title;
+  const descEl = document.querySelector('meta[name="description"]');
+  if (descEl) descEl.setAttribute('content', meta.desc);
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.setAttribute('content', meta.title);
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) ogDesc.setAttribute('content', meta.desc);
+}
+
 /* ============ NAV / ROUTER ============ */
 function go(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -51,6 +82,7 @@ function go(view){
   if(view==='catalog')renderCatalog();
   setTimeout(observeReveals,50);
   history.replaceState(null,'','#'+view);
+  updateViewSEO(view);
 }
 function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
 
@@ -226,8 +258,19 @@ function openModal(id){
     </div>`;
   document.getElementById('prodOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+  // Update page title and URL hash for direct product sharing and indexing
+  document.title = `${p.name} — Medical Equipment | Inquis Life Care Sciences`;
+  const descEl = document.querySelector('meta[name="description"]');
+  if (descEl) descEl.setAttribute('content', `${p.name} (${p.subtitle}). Models: ${p.models.join(', ')}. Certified: ${(p.certs||[]).join(', ')}. Inquis Life Care Sciences, Hyderabad.`);
+  history.replaceState(null, '', '#product/' + p.id);
 }
-function closeModal(){document.getElementById('prodOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModal(){
+  document.getElementById('prodOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  const activeNav = (document.querySelector('nav.main a.active')||{}).dataset?.nav || 'home';
+  updateViewSEO(activeNav);
+  history.replaceState(null, '', '#' + activeNav);
+}
 function switchTab(e,id){
   e.currentTarget.parentElement.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
   e.currentTarget.classList.add('active');
@@ -325,10 +368,24 @@ function submitEnquiry(e){
     body+=`${i+1}. ${p.name} - ${c.model} (Qty: ${c.qty})%0D%0A`;});
   body+=`%0D%0AName: ${name}%0D%0AOrganization: ${org}%0D%0APhone: ${phone}%0D%0AEmail: ${email}%0D%0ANotes: ${msg}`;
   const subject='Product Enquiry — '+cartCount()+' item(s)';
-  window.location.href=`mailto:inquislifecaresciences@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+  window.location.href=`mailto:sales@inquislifecaresciences.com?cc=support@inquislifecaresciences.com,meghananarayanswamy@inquislifecaresciences.com&subject=${encodeURIComponent(subject)}&body=${body}`;
   toast(icon('check')+' Opening your email to send the enquiry…');
 }
-function submitContact(e){e.preventDefault();toast(icon('check')+' Thank you! We will get back to you shortly.');e.target.reset();}
+function submitContact(e){
+  e.preventDefault();
+  const form=e.target;
+  const inputs=form.querySelectorAll('input, textarea');
+  const name=inputs[0]?.value||'';
+  const org=inputs[1]?.value||'';
+  const phone=inputs[2]?.value||'';
+  const email=inputs[3]?.value||'';
+  const msg=inputs[4]?.value||'';
+  const subject=`Enquiry / Message from ${name || 'Website Visitor'}`;
+  const body=`Message from Inquis Life Care Sciences Website Contact Form%0D%0A%0D%0AName: ${name}%0D%0AOrganization: ${org}%0D%0APhone: ${phone}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${msg}`;
+  window.location.href=`mailto:sales@inquislifecaresciences.com?cc=support@inquislifecaresciences.com,meghananarayanswamy@inquislifecaresciences.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  toast(icon('check')+' Opening your email to send the message…');
+  form.reset();
+}
 
 /* ============ MOBILE NAV ============ */
 function openMobNav(){document.getElementById('mobNav').classList.add('open');document.body.style.overflow='hidden';}
@@ -358,5 +415,17 @@ observeReveals();
 window.addEventListener('scroll',()=>{document.getElementById('hdr').classList.toggle('scrolled',window.scrollY>10);},{passive:true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDrawer();closeMobNav();}});
 // route from hash
-const h=location.hash.replace('#','');
-if(['catalog','about','contact'].includes(h))go(h);
+const rawHash = location.hash.replace('#', '');
+if (rawHash.startsWith('product/')) {
+  const pid = rawHash.replace('product/', '');
+  go('catalog');
+  setTimeout(() => openModal(pid), 120);
+} else if (rawHash.startsWith('catalog/')) {
+  const cat = rawHash.replace('catalog/', '');
+  go('catalog');
+  setTimeout(() => setCat(cat), 120);
+} else if (['catalog', 'about', 'contact'].includes(rawHash)) {
+  go(rawHash);
+} else {
+  updateViewSEO('home');
+}
