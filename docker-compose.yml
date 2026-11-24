@@ -1,45 +1,9 @@
 services:
-  # ========================================================
-  # Tailscale Sidecar Container
-  # Connects this Docker service directly to your Tailnet
-  # ========================================================
-  tailscale:
-    image: tailscale/tailscale:latest
-    container_name: inquis-tailscale
-    hostname: ${TS_HOSTNAME:-inquis-website}
-    environment:
-      - TS_AUTHKEY=${TS_AUTHKEY}
-      - TS_HOSTNAME=${TS_HOSTNAME:-inquis-website}
-      - TS_STATE_DIR=/var/lib/tailscale
-      - TS_USERSPACE=${TS_USERSPACE:-false}
-      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS:-}
-    volumes:
-      - tailscale-data:/var/lib/tailscale
-      - /dev/net/tun:/dev/net/tun
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    ports:
-      # Exposes the website locally on the host machine for testing (e.g. http://localhost:8080)
-      - "${LOCAL_PORT:-8080}:80"
-    restart: unless-stopped
-
-  # ========================================================
-  # Inquis Website Service (Nginx)
-  # Shares the network namespace of the Tailscale container
-  # ========================================================
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: inquis-web
-    # Attaches directly to Tailscale's network stack
-    network_mode: "service:tailscale"
-    depends_on:
-      - tailscale
+    container_name: inquis-website
+    ports:
+      - "80:80"
     restart: unless-stopped
-
-volumes:
-  # Preserves Tailscale machine identity across container restarts
-  tailscale-data:
-    driver: local
