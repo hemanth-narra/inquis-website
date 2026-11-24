@@ -158,11 +158,11 @@
       <div class="brand-txt"><b>Inquis Life Care Sciences</b><span>Medical Equipment &amp; Solutions</span></div>
     </div>
     <nav class="main" id="mainNav">
-      <a data-nav="home" onclick="go('home')">Home</a>
-      <a data-nav="catalog" onclick="go('catalog')">Catalog</a>
-      <a data-nav="brands" onclick="go('home');setTimeout(()=>scrollToId('brands'),120)">Brands</a>
-      <a data-nav="about" onclick="go('about')">About</a>
-      <a data-nav="contact" onclick="go('contact')">Contact</a>
+      <a data-nav="home" href="#home" onclick="go('home');return false;">Home</a>
+      <a data-nav="catalog" href="#catalog" onclick="go('catalog');return false;">Catalog</a>
+      <a data-nav="brands" href="#brands" onclick="go('home');setTimeout(()=>scrollToId('brands'),120);return false;">Brands</a>
+      <a data-nav="about" href="#about" onclick="go('about');return false;">About</a>
+      <a data-nav="contact" href="#contact" onclick="go('contact');return false;">Contact</a>
     </nav>
     <div class="nav-right">
       <button class="icon-btn" onclick="toggleSearch()" aria-label="Search" id="searchToggle"><svg class="svgi" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
@@ -545,12 +545,12 @@
       <div class="logo-mark"><b>INQUIS</b><span>LIFE CARE SCIENCES</span></div>
       <button class="icon-btn" onclick="closeMobNav()"><svg class="svgi" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
-    <a onclick="go('home');closeMobNav()">Home</a>
-    <a onclick="go('catalog');closeMobNav()">Catalog</a>
-    <a onclick="go('home');closeMobNav();setTimeout(()=>scrollToId('brands'),200)">Brands</a>
-    <a onclick="go('about');closeMobNav()">About</a>
-    <a onclick="go('contact');closeMobNav()">Contact</a>
-    <a onclick="openDrawer();closeMobNav()" style="background:var(--royal);color:#fff;margin-top:10px">Request a Quote →</a>
+    <a href="#home" onclick="go('home');closeMobNav();return false;">Home</a>
+    <a href="#catalog" onclick="go('catalog');closeMobNav();return false;">Catalog</a>
+    <a href="#brands" onclick="go('home');closeMobNav();setTimeout(()=>scrollToId('brands'),200);return false;">Brands</a>
+    <a href="#about" onclick="go('about');closeMobNav();return false;">About</a>
+    <a href="#contact" onclick="go('contact');closeMobNav();return false;">Contact</a>
+    <a href="#enquiry" onclick="openDrawer();closeMobNav();return false;" style="background:var(--royal);color:#fff;margin-top:10px">Request a Quote →</a>
   </div>
 </div>
 
@@ -570,11 +570,11 @@
       </div>
       <div class="footer-col">
         <h4>Explore</h4>
-        <a onclick="go('home')">Home</a>
-        <a onclick="go('catalog')">Product Catalog</a>
-        <a onclick="go('about')">About Us</a>
-        <a onclick="go('contact')">Contact</a>
-        <a onclick="openDrawer()">Request a Quote</a>
+        <a href="#home" onclick="go('home');return false;">Home</a>
+        <a href="#catalog" onclick="go('catalog');return false;">Product Catalog</a>
+        <a href="#about" onclick="go('about');return false;">About Us</a>
+        <a href="#contact" onclick="go('contact');return false;">Contact</a>
+        <a href="#enquiry" onclick="openDrawer();return false;">Request a Quote</a>
       </div>
       <div class="footer-col" id="footerCats">
         <h4>Categories</h4>

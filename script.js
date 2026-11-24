@@ -39,8 +39,23 @@ function catMeta(id){return DATA.categories.find(c=>c.id===id)||{};}
 let cart = loadCart();
 let catFilter='all', catQuery='', globalQuery='';
 
-function loadCart(){try{return JSON.parse(localStorage.getItem('inquis_cart')||'[]')}catch(e){return[]}}
+function loadCart(){
+  try{
+    const raw = JSON.parse(localStorage.getItem('inquis_cart')||'[]');
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(c => c && c.id && DATA.products.some(p => p.id === c.id));
+  }catch(e){return[]}
+}
 function saveCart(){try{localStorage.setItem('inquis_cart',JSON.stringify(cart))}catch(e){}}
+
+function unlockScrollIfNeeded(){
+  const modalOpen = document.getElementById('prodOverlay')?.classList.contains('open');
+  const drawerOpen = document.getElementById('drawer')?.classList.contains('open');
+  const mobNavOpen = document.getElementById('mobNav')?.classList.contains('open');
+  if (!modalOpen && !drawerOpen && !mobNavOpen) {
+    document.body.style.overflow = '';
+  }
+}
 
 /* ============ SEO & VIEW CONFIG ============ */
 const VIEW_SEO = {
@@ -74,14 +89,17 @@ function updateViewSEO(view){
 }
 
 /* ============ NAV / ROUTER ============ */
-function go(view){
+function go(view, pushHistory = true){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+view).classList.add('active');
+  const target = document.getElementById('view-'+view);
+  if (target) target.classList.add('active');
   document.querySelectorAll('nav.main a').forEach(a=>a.classList.toggle('active',a.dataset.nav===view));
   window.scrollTo({top:0,behavior:'instant'in document.documentElement.style?'instant':'auto'});
   if(view==='catalog')renderCatalog();
   setTimeout(observeReveals,50);
-  history.replaceState(null,'','#'+view);
+  if (pushHistory) {
+    history.pushState(null,'','#'+view);
+  }
   updateViewSEO(view);
 }
 function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
@@ -136,7 +154,7 @@ function buildHome(){
 
   // footer categories
   document.getElementById('footerCats').innerHTML='<h4>Categories</h4>'+DATA.categories.map(c=>
-    `<a onclick="go('catalog');setTimeout(()=>setCat('${c.id}'),60)">${c.name}</a>`).join('');
+    `<a href="#catalog/${c.id}" onclick="go('catalog');setTimeout(()=>setCat('${c.id}'),60);return false;">${c.name}</a>`).join('');
 }
 function dnaPattern(){
   let s='<svg width="100%" height="100%" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" fill="none">';
@@ -162,7 +180,7 @@ function cardHTML(p,i){
       <span class="card-ico">${icon(cat.icon)}</span><span class="media-model">${p.models[0]}</span></div>`;
   }
   const cert=(p.certs||[]).map(c=>`<span class="chip-cert">${c}</span>`).join('');
-  return `<div class="card reveal ${'d'+(i%4)} ${p.featured?'featured-ribbon':''}" onclick="openModal('${p.id}')">
+  return `<div class="card reveal ${'d'+(i%4)} ${p.featured?'featured-ribbon':''}" role="button" tabindex="0" aria-label="View ${p.name} details" onclick="openModal('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${p.id}');}">
     ${media}<div class="card-cert">${cert}</div>
     <div class="card-body">
       <div class="card-cat">${cat.name}</div>
@@ -216,11 +234,21 @@ function toggleFilters(){document.getElementById('filterPanel').classList.toggle
 
 /* ============ GLOBAL SEARCH ============ */
 function toggleSearch(){const s=document.getElementById('searchBar');s.classList.toggle('open');if(s.classList.contains('open'))setTimeout(()=>document.getElementById('globalSearch').focus(),120);}
-function globalSearchInput(v){globalQuery=v.toLowerCase().trim();if(globalQuery.length>0){go('catalog');document.getElementById('catSearch').value=v;catQuery=globalQuery;renderCatalog();}}
+function globalSearchInput(v){
+  globalQuery=v.toLowerCase().trim();
+  const catInput = document.getElementById('catSearch');
+  if(catInput) catInput.value = v;
+  catQuery = globalQuery;
+  if(globalQuery.length > 0){
+    go('catalog');
+  } else {
+    renderCatalog();
+  }
+}
 
 /* ============ PRODUCT MODAL ============ */
 let modalProd=null;
-function openModal(id){
+function openModal(id, pushHistory = true){
   const p=DATA.products.find(x=>x.id===id);if(!p)return;modalProd=p;
   const cat=catMeta(p.cat);
   let media;
@@ -262,14 +290,18 @@ function openModal(id){
   document.title = `${p.name} — Medical Equipment | Inquis Life Care Sciences`;
   const descEl = document.querySelector('meta[name="description"]');
   if (descEl) descEl.setAttribute('content', `${p.name} (${p.subtitle}). Models: ${p.models.join(', ')}. Certified: ${(p.certs||[]).join(', ')}. Inquis Life Care Sciences, Hyderabad.`);
-  history.replaceState(null, '', '#product/' + p.id);
+  if (pushHistory) {
+    history.pushState(null, '', '#product/' + p.id);
+  }
 }
-function closeModal(){
+function closeModal(pushHistory = true){
   document.getElementById('prodOverlay').classList.remove('open');
-  document.body.style.overflow='';
+  unlockScrollIfNeeded();
   const activeNav = (document.querySelector('nav.main a.active')||{}).dataset?.nav || 'home';
   updateViewSEO(activeNav);
-  history.replaceState(null, '', '#' + activeNav);
+  if (pushHistory) {
+    history.pushState(null, '', '#' + activeNav);
+  }
 }
 function switchTab(e,id){
   e.currentTarget.parentElement.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
@@ -300,7 +332,7 @@ function updateCartUI(){
 function pulseCart(){const b=document.getElementById('cartBadge');b.style.transform='scale(0)';setTimeout(()=>b.classList.add('show'),10);}
 
 function openDrawer(){renderDrawer();document.getElementById('drawer').classList.add('open');document.getElementById('drawerOverlay').classList.add('open');document.body.style.overflow='hidden';}
-function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');unlockScrollIfNeeded();}
 function renderDrawer(){
   const body=document.getElementById('drawerBody');const foot=document.getElementById('drawerFoot');
   if(cart.length===0){
@@ -338,37 +370,43 @@ function renderDrawer(){
     <button class="enq-wa" onclick="sendWhatsApp()">${icon('chat')} Send via WhatsApp</button>`;
 }
 function buildEnquiryText(){
-  let t='*Enquiry — Inquis Life Care Sciences*%0A%0A';
-  cart.forEach((c,i)=>{const p=DATA.products.find(x=>x.id===c.id);
-    t+=`${i+1}. ${p.name} — ${c.model} (Qty: ${c.qty})%0A`;});
+  let t='*Enquiry — Inquis Life Care Sciences*\n\n';
+  cart.forEach((c,i)=>{
+    const p=DATA.products.find(x=>x.id===c.id);
+    if(p) t+=`${i+1}. ${p.name} — ${c.model} (Qty: ${c.qty})\n`;
+  });
   const name=(document.getElementById('enqName')||{}).value||'';
   const org=(document.getElementById('enqOrg')||{}).value||'';
   const phone=(document.getElementById('enqPhone')||{}).value||'';
   const email=(document.getElementById('enqEmail')||{}).value||'';
   const msg=(document.getElementById('enqMsg')||{}).value||'';
-  t+='%0A';
-  if(name)t+=`Name: ${name}%0A`;if(org)t+=`Org: ${org}%0A`;
-  if(phone)t+=`Phone: ${phone}%0A`;if(email)t+=`Email: ${email}%0A`;
-  if(msg)t+=`Notes: ${msg}%0A`;
+  t+='\n';
+  if(name)t+=`Name: ${name}\n`;
+  if(org)t+=`Org: ${org}\n`;
+  if(phone)t+=`Phone: ${phone}\n`;
+  if(email)t+=`Email: ${email}\n`;
+  if(msg)t+=`Notes: ${msg}\n`;
   return t;
 }
 function sendWhatsApp(){
   if(cart.length===0){toast(icon('x')+' Add products first');return;}
-  window.open('https://wa.me/919901141444?text='+buildEnquiryText(),'_blank');
+  window.open('https://wa.me/919901141444?text='+encodeURIComponent(buildEnquiryText()),'_blank');
 }
 function submitEnquiry(e){
   e.preventDefault();
-  const name=document.getElementById('enqName').value;
-  const phone=document.getElementById('enqPhone').value;
-  const email=document.getElementById('enqEmail').value||'';
-  const org=document.getElementById('enqOrg').value||'';
-  const msg=document.getElementById('enqMsg').value||'';
-  let body='Enquiry from Inquis Life Care Sciences website%0D%0A%0D%0A';
-  cart.forEach((c,i)=>{const p=DATA.products.find(x=>x.id===c.id);
-    body+=`${i+1}. ${p.name} - ${c.model} (Qty: ${c.qty})%0D%0A`;});
-  body+=`%0D%0AName: ${name}%0D%0AOrganization: ${org}%0D%0APhone: ${phone}%0D%0AEmail: ${email}%0D%0ANotes: ${msg}`;
+  const name=(document.getElementById('enqName')||{}).value||'';
+  const phone=(document.getElementById('enqPhone')||{}).value||'';
+  const email=(document.getElementById('enqEmail')||{}).value||'';
+  const org=(document.getElementById('enqOrg')||{}).value||'';
+  const msg=(document.getElementById('enqMsg')||{}).value||'';
+  let body='Enquiry from Inquis Life Care Sciences website\n\n';
+  cart.forEach((c,i)=>{
+    const p=DATA.products.find(x=>x.id===c.id);
+    if(p) body+=`${i+1}. ${p.name} - ${c.model} (Qty: ${c.qty})\n`;
+  });
+  body+=`\nName: ${name}\nOrganization: ${org}\nPhone: ${phone}\nEmail: ${email}\nNotes: ${msg}`;
   const subject='Product Enquiry — '+cartCount()+' item(s)';
-  window.location.href=`mailto:sales@inquislifecaresciences.com?cc=support@inquislifecaresciences.com,meghananarayanswamy@inquislifecaresciences.com&subject=${encodeURIComponent(subject)}&body=${body}`;
+  window.location.href=`mailto:sales@inquislifecaresciences.com?cc=support@inquislifecaresciences.com,meghananarayanswamy@inquislifecaresciences.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   toast(icon('check')+' Opening your email to send the enquiry…');
 }
 function submitContact(e){
@@ -381,7 +419,7 @@ function submitContact(e){
   const email=inputs[3]?.value||'';
   const msg=inputs[4]?.value||'';
   const subject=`Enquiry / Message from ${name || 'Website Visitor'}`;
-  const body=`Message from Inquis Life Care Sciences Website Contact Form%0D%0A%0D%0AName: ${name}%0D%0AOrganization: ${org}%0D%0APhone: ${phone}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${msg}`;
+  const body=`Message from Inquis Life Care Sciences Website Contact Form\n\nName: ${name}\nOrganization: ${org}\nPhone: ${phone}\nEmail: ${email}\n\nMessage:\n${msg}`;
   window.location.href=`mailto:sales@inquislifecaresciences.com?cc=support@inquislifecaresciences.com,meghananarayanswamy@inquislifecaresciences.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   toast(icon('check')+' Opening your email to send the message…');
   form.reset();
@@ -389,7 +427,7 @@ function submitContact(e){
 
 /* ============ MOBILE NAV ============ */
 function openMobNav(){document.getElementById('mobNav').classList.add('open');document.body.style.overflow='hidden';}
-function closeMobNav(){document.getElementById('mobNav').classList.remove('open');document.body.style.overflow='';}
+function closeMobNav(){document.getElementById('mobNav').classList.remove('open');unlockScrollIfNeeded();}
 
 /* ============ TOAST ============ */
 function toast(html){
@@ -406,6 +444,26 @@ function observeReveals(){
   document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
 }
 
+/* ============ ROUTING HANDLER ============ */
+function handleHashRoute(pushHistory = false){
+  const rawHash = location.hash.replace('#', '');
+  if (rawHash.startsWith('product/')) {
+    const pid = rawHash.replace('product/', '');
+    go('catalog', pushHistory);
+    setTimeout(() => openModal(pid, pushHistory), 100);
+  } else if (rawHash.startsWith('catalog/')) {
+    const cat = rawHash.replace('catalog/', '');
+    go('catalog', pushHistory);
+    setTimeout(() => setCat(cat), 100);
+  } else if (['catalog', 'about', 'contact'].includes(rawHash)) {
+    closeModal(false);
+    go(rawHash, pushHistory);
+  } else {
+    closeModal(false);
+    go('home', pushHistory);
+  }
+}
+
 /* ============ INIT ============ */
 document.getElementById('yr').textContent=new Date().getFullYear();
 buildHome();
@@ -414,18 +472,7 @@ updateCartUI();
 observeReveals();
 window.addEventListener('scroll',()=>{document.getElementById('hdr').classList.toggle('scrolled',window.scrollY>10);},{passive:true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDrawer();closeMobNav();}});
-// route from hash
-const rawHash = location.hash.replace('#', '');
-if (rawHash.startsWith('product/')) {
-  const pid = rawHash.replace('product/', '');
-  go('catalog');
-  setTimeout(() => openModal(pid), 120);
-} else if (rawHash.startsWith('catalog/')) {
-  const cat = rawHash.replace('catalog/', '');
-  go('catalog');
-  setTimeout(() => setCat(cat), 120);
-} else if (['catalog', 'about', 'contact'].includes(rawHash)) {
-  go(rawHash);
-} else {
-  updateViewSEO('home');
-}
+window.addEventListener('popstate', () => handleHashRoute(false));
+
+// initial route
+handleHashRoute(false);
