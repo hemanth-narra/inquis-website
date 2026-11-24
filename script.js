@@ -43,7 +43,15 @@ function loadCart(){
   try{
     const raw = JSON.parse(localStorage.getItem('inquis_cart')||'[]');
     if (!Array.isArray(raw)) return [];
-    return raw.filter(c => c && c.id && DATA.products.some(p => p.id === c.id));
+    return raw.filter(c => c && c.id && DATA.products.some(p => p.id === c.id)).map(c => {
+      const p = DATA.products.find(x => x.id === c.id);
+      return {
+        uid: c.uid || (c.id + '_' + (c.model || p.models[0]) + '_' + Math.random().toString(36).slice(2, 7)),
+        id: c.id,
+        model: c.model || p.models[0],
+        qty: Math.max(1, parseInt(c.qty) || 1)
+      };
+    });
   }catch(e){return[]}
 }
 function saveCart(){try{localStorage.setItem('inquis_cart',JSON.stringify(cart))}catch(e){}}
@@ -261,7 +269,20 @@ function openModal(id, pushHistory = true){
   const certs=(p.certs||[]).map(c=>`<span class="cert-badge">${icon('check')}${c} Certified</span>`).join('');
   const feats=(p.features||[]).map(f=>`<li>${icon('check')}<span>${f}</span></li>`).join('');
   const specs=Object.entries(p.specs||{}).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
-  const models=(p.models||[]).map(m=>`<div class="model-chip">${icon('check')}${m}</div>`).join('');
+  const models=(p.models||[]).map(m=>{
+    const inCart=cart.find(c=>c.id===p.id&&c.model===m);
+    return `<div class="model-chip clickable" onclick="addToCart('${p.id}','${m}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addToCart('${p.id}','${m}');}" role="button" tabindex="0" title="Click to add ${m} to enquiry">
+      <span class="mchip-name">${icon('check')}${m}</span>
+      <span class="mchip-action">${inCart?`Added (${inCart.qty}) +`:`+ Add`}</span>
+    </div>`;
+  }).join('');
+  const modelPicker = (p.models.length > 1) ? `
+    <div class="modal-model-picker">
+      <label class="modal-picker-lbl">Select Model / Variant:</label>
+      <select class="modal-model-sel" id="modalModelSel" onchange="updateModalBtn()">
+        ${p.models.map(m => `<option value="${m}">${m}</option>`).join('')}
+      </select>
+    </div>` : '';
   document.getElementById('prodModal').innerHTML=`
     <button class="modal-close" onclick="closeModal()">${icon('x')}</button>
     <div class="modal-top">
@@ -271,8 +292,9 @@ function openModal(id, pushHistory = true){
         <h2>${p.name}</h2>
         <p class="msub">${p.subtitle}</p>
         <div class="cert-row">${certs}${p.brand?`<span class="cert-badge">${icon('award')}${p.brand}</span>`:''}</div>
+        ${modelPicker}
         <div class="modal-actions">
-          <button class="${cart.find(c=>c.id===p.id)?'btn btn-add-lg in-cart':'btn btn-add-lg'}" id="modalAddBtn" onclick="addToCart('${p.id}')">${cart.find(c=>c.id===p.id)?`${icon('check')} In Enquiry (${cart.find(c=>c.id===p.id).qty}) — Add More`:`${icon('plus')} Add to Enquiry`}</button>
+          <button class="btn btn-add-lg" id="modalAddBtn" onclick="addModalProdToCart('${p.id}')">${icon('plus')} Add to Enquiry</button>
           <a class="btn btn-wa" href="https://wa.me/919901141444?text=${encodeURIComponent('Hi, I would like a quote for '+p.name+' ('+p.models.join(', ')+')')}" target="_blank">${icon('chat')} Quick Quote</a>
         </div>
       </div>
@@ -285,10 +307,10 @@ function openModal(id, pushHistory = true){
       </div>
       <div class="mtab-panel active" id="tab-feat"><ul class="feat-list">${feats}</ul></div>
       <div class="mtab-panel" id="tab-spec"><table class="spec-table">${specs}</table></div>
-      <div class="mtab-panel" id="tab-model"><p style="color:var(--slate);font-size:14px;margin-bottom:14px">Available models &amp; variants — specify your preference when you enquire:</p><div class="model-chips">${models}</div></div>
+      <div class="mtab-panel" id="tab-model"><p style="color:var(--slate);font-size:14px;margin-bottom:14px">Available models &amp; variants — click any model to add to your enquiry:</p><div class="model-chips">${models}</div></div>
     </div>`;
   document.getElementById('prodOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
+  if (document.body) document.body.style.overflow='hidden';
   // Update page title and URL hash for direct product sharing and indexing
   document.title = `${p.name} — Medical Equipment | Inquis Life Care Sciences`;
   const descEl = document.querySelector('meta[name="description"]');
@@ -296,6 +318,7 @@ function openModal(id, pushHistory = true){
   if (pushHistory) {
     history.pushState(null, '', '#product/' + p.id);
   }
+  updateModalBtn();
 }
 function closeModal(pushHistory = true){
   document.getElementById('prodOverlay').classList.remove('open');
@@ -315,24 +338,47 @@ function switchTab(e,id){
 function updateModalBtn(){
   if (!modalProd) return;
   const btn = document.getElementById('modalAddBtn');
-  if (!btn) return;
-  const inCart = cart.find(c => c.id === modalProd.id);
-  if (inCart) {
-    btn.className = 'btn btn-add-lg in-cart';
-    btn.innerHTML = `${icon('check')} In Enquiry (${inCart.qty}) — Add More`;
-  } else {
-    btn.className = 'btn btn-add-lg';
-    btn.innerHTML = `${icon('plus')} Add to Enquiry`;
+  if (btn) {
+    const sel = document.getElementById('modalModelSel');
+    const selectedModel = sel ? sel.value : modalProd.models[0];
+    const inCart = cart.find(c => c.id === modalProd.id && c.model === selectedModel);
+    if (inCart) {
+      btn.className = 'btn btn-add-lg in-cart';
+      btn.innerHTML = `${icon('check')} In Enquiry (${inCart.qty} of ${selectedModel}) — Add More`;
+    } else {
+      btn.className = 'btn btn-add-lg';
+      btn.innerHTML = `${icon('plus')} Add ${selectedModel} to Enquiry`;
+    }
   }
+  const tabModel = document.getElementById('tab-model');
+  if (tabModel && modalProd.models) {
+    const chipsEl = tabModel.querySelector('.model-chips');
+    if (chipsEl) {
+      chipsEl.innerHTML = modalProd.models.map(m => {
+        const inCart = cart.find(c => c.id === modalProd.id && c.model === m);
+        return `<div class="model-chip clickable" onclick="addToCart('${modalProd.id}','${m}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addToCart('${modalProd.id}','${m}');}" role="button" tabindex="0" title="Click to add ${m} to enquiry">
+          <span class="mchip-name">${icon('check')}${m}</span>
+          <span class="mchip-action">${inCart ? `Added (${inCart.qty}) +` : `+ Add`}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+function addModalProdToCart(id){
+  const sel = document.getElementById('modalModelSel');
+  const selectedModel = sel ? sel.value : null;
+  addToCart(id, selectedModel);
 }
 
 function updateCardButtons(){
   document.querySelectorAll('.btn-add[data-prod-id]').forEach(btn => {
     const id = btn.dataset.prodId;
-    const inCart = cart.find(c => c.id === id);
-    if (inCart) {
+    const items = cart.filter(c => c.id === id);
+    const totalQty = items.reduce((s, c) => s + c.qty, 0);
+    if (totalQty > 0) {
       btn.classList.add('in-cart');
-      btn.innerHTML = `${icon('check')} Added (${inCart.qty})`;
+      const modelCount = items.length;
+      btn.innerHTML = `${icon('check')} Added (${totalQty}${modelCount > 1 ? ` · ${modelCount} models` : ''})`;
     } else {
       btn.classList.remove('in-cart');
       btn.innerHTML = `${icon('plus')} Enquire`;
@@ -341,18 +387,64 @@ function updateCardButtons(){
 }
 
 /* ============ CART / ENQUIRY ============ */
-function addToCart(id){
-  const existing=cart.find(c=>c.id===id);
+function addToCart(id, specificModel = null){
   const p=DATA.products.find(x=>x.id===id);
-  if(existing){existing.qty++;}
-  else{cart.push({id,qty:1,model:p.models[0]});}
-  saveCart();updateCartUI();
-  toast(icon('check')+' '+p.name+' added to enquiry');
+  if(!p) return;
+  const model = specificModel || p.models[0];
+  const existing = cart.find(c => c.id === id && c.model === model);
+  if(existing){
+    existing.qty++;
+  } else {
+    const uid = 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+    cart.push({ uid, id, model, qty: 1 });
+  }
+  saveCart();
+  updateCartUI();
+  toast(icon('check') + ' ' + p.name + ' (' + model + ') added to enquiry');
   pulseCart();
 }
-function removeFromCart(id){cart=cart.filter(c=>c.id!==id);saveCart();updateCartUI();renderDrawer();}
-function changeQty(id,d){const c=cart.find(x=>x.id===id);if(!c)return;c.qty=Math.max(1,c.qty+d);saveCart();updateCartUI();renderDrawer();}
-function setModel(id,m){const c=cart.find(x=>x.id===id);if(c){c.model=m;saveCart();}}
+function addAnotherModel(id){
+  const p=DATA.products.find(x=>x.id===id);
+  if(!p) return;
+  const existingModels = cart.filter(c => c.id === id).map(c => c.model);
+  const nextModel = p.models.find(m => !existingModels.includes(m)) || p.models[0];
+  const uid = 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+  cart.push({ uid, id, model: nextModel, qty: 1 });
+  saveCart();
+  updateCartUI();
+  renderDrawer();
+  toast(icon('plus') + ' Added ' + nextModel + ' variant');
+  pulseCart();
+}
+function removeFromCart(uid){
+  cart = cart.filter(c => c.uid !== uid);
+  saveCart();
+  updateCartUI();
+  renderDrawer();
+}
+function changeQty(uid, d){
+  const c = cart.find(x => x.uid === uid);
+  if(!c) return;
+  c.qty = Math.max(1, c.qty + d);
+  saveCart();
+  updateCartUI();
+  renderDrawer();
+}
+function setModel(uid, newModel){
+  const c = cart.find(x => x.uid === uid);
+  if(!c) return;
+  const duplicate = cart.find(x => x.uid !== uid && x.id === c.id && x.model === newModel);
+  if (duplicate) {
+    duplicate.qty += c.qty;
+    cart = cart.filter(x => x.uid !== uid);
+    toast(icon('check') + ' Combined into ' + newModel + ' (Qty: ' + duplicate.qty + ')');
+  } else {
+    c.model = newModel;
+  }
+  saveCart();
+  updateCartUI();
+  renderDrawer();
+}
 function cartCount(){return cart.reduce((s,c)=>s+c.qty,0);}
 function updateCartUI(){
   const n=cartCount();
@@ -372,7 +464,7 @@ function pulseCart(){
   b.classList.add('show');
 }
 
-function openDrawer(){renderDrawer();document.getElementById('drawer').classList.add('open');document.getElementById('drawerOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function openDrawer(){renderDrawer();document.getElementById('drawer').classList.add('open');document.getElementById('drawerOverlay').classList.add('open');if(document.body)document.body.style.overflow='hidden';}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');unlockScrollIfNeeded();}
 function renderDrawer(){
   const body=document.getElementById('drawerBody');const foot=document.getElementById('drawerFoot');
@@ -389,16 +481,26 @@ function renderDrawer(){
     let thumb;
     if(p.image){thumb=`<div class="enq-thumb"><img src="img/${p.image}" alt=""></div>`;}
     else{const col=CATCOLOR[p.cat]||['#0b4699','#2f7fd1'];thumb=`<div class="enq-thumb icon" style="background:linear-gradient(150deg,${col[0]},${col[1]})">${icon(cat.icon)}</div>`;}
-    const opts=p.models.map(m=>`<option ${m===c.model?'selected':''}>${m}</option>`).join('');
+    const opts=p.models.map(m=>`<option value="${m}" ${m===c.model?'selected':''}>${m}</option>`).join('');
     return `<div class="enq-item">
       ${thumb}
       <div class="enq-info">
         <div class="ecat">${cat.name}</div>
         <h4>${p.name}</h4>
-        <select class="enq-model-sel" onchange="setModel('${c.id}',this.value)">${opts}</select>
-        <div class="enq-qty"><button onclick="changeQty('${c.id}',-1)">${icon('minus')}</button><span>${c.qty}</span><button onclick="changeQty('${c.id}',1)">${icon('plus')}</button></div>
+        <div class="enq-model-wrap">
+          <label class="enq-model-lbl">Model:</label>
+          <select class="enq-model-sel" onchange="setModel('${c.uid}',this.value)">${opts}</select>
+        </div>
+        <div class="enq-qty-row">
+          <div class="enq-qty">
+            <button type="button" onclick="changeQty('${c.uid}',-1)" aria-label="Decrease quantity">${icon('minus')}</button>
+            <span>${c.qty}</span>
+            <button type="button" onclick="changeQty('${c.uid}',1)" aria-label="Increase quantity">${icon('plus')}</button>
+          </div>
+          ${p.models.length > 1 ? `<button type="button" class="enq-add-model" onclick="addAnotherModel('${p.id}')">${icon('plus')} Add another model</button>` : ''}
+        </div>
       </div>
-      <button class="enq-remove" onclick="removeFromCart('${c.id}')">${icon('x')}</button>
+      <button type="button" class="enq-remove" onclick="removeFromCart('${c.uid}')" aria-label="Remove item">${icon('x')}</button>
     </div>`;
   }).join('');
   foot.innerHTML=`
@@ -414,7 +516,7 @@ function buildEnquiryText(){
   let t='*Enquiry — Inquis Life Care Sciences*\n\n';
   cart.forEach((c,i)=>{
     const p=DATA.products.find(x=>x.id===c.id);
-    if(p) t+=`${i+1}. ${p.name} — ${c.model} (Qty: ${c.qty})\n`;
+    if(p) t+=`${i+1}. ${p.name} — Model: ${c.model} (Qty: ${c.qty})\n`;
   });
   const name=(document.getElementById('enqName')||{}).value||'';
   const org=(document.getElementById('enqOrg')||{}).value||'';
@@ -443,7 +545,7 @@ function submitEnquiry(e){
   let body='Enquiry from Inquis Life Care Sciences website\n\n';
   cart.forEach((c,i)=>{
     const p=DATA.products.find(x=>x.id===c.id);
-    if(p) body+=`${i+1}. ${p.name} - ${c.model} (Qty: ${c.qty})\n`;
+    if(p) body+=`${i+1}. ${p.name} — Model: ${c.model} (Qty: ${c.qty})\n`;
   });
   body+=`\nName: ${name}\nOrganization: ${org}\nPhone: ${phone}\nEmail: ${email}\nNotes: ${msg}`;
   const subject='Product Enquiry — '+cartCount()+' item(s)';
@@ -481,6 +583,7 @@ function toast(html){
 /* ============ REVEAL ON SCROLL ============ */
 let io;
 function observeReveals(){
+  if(typeof IntersectionObserver === 'undefined') return;
   if(!io){io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});}
   document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
 }
