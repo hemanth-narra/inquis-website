@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inquis Life Care Sciences — Medical Equipment, Accessories & Consumables | Hyderabad, India</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b4699'/%3E%3Cpath d='M32 15v34M15 32h34' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <meta name="description" content="Inquis Life Care Sciences LLP is an authorized distributor of hospital & medical equipment across India. Patient monitors, 12-lead ECG machines, defibrillators, BiPAP ventilators, OT lights, and neonatal care in Hyderabad, Telangana.">
 <meta name="keywords" content="Inquis Life Care Sciences, medical equipment distributor Hyderabad, hospital equipment supplier India, patient monitor Mindray ePM12, 12 lead ECG machine price, BiPAP ventilator, defibrillator AED, syringe infusion pump, infant radiant warmer, surgical diathermy ESU">
 <meta name="author" content="Inquis Life Care Sciences LLP">
@@ -139,7 +141,7 @@
           "name": "How can hospitals and doctors request a price quotation?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You can add required products to the online enquiry cart on our website and submit for a quick quote, email our sales team at sales@inquislifecaresciences.com, or message us directly via WhatsApp at +91 99011 41444."
+            "text": "You can add required products to the online enquiry cart on our website and submit for a quick quote, email our sales team at sales@inquislifecaresciences.com, or message us directly via WhatsApp at +91 87626 66932."
           }
         }
       ]
@@ -173,7 +175,7 @@
   <div class="searchbar" id="searchBar">
     <div class="wrap">
       <svg class="svgi" viewBox="0 0 24 24" style="font-size:20px;color:var(--slate)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input type="text" id="globalSearch" placeholder="Search 100+ products — monitors, ECG, ventilators, defibrillators…" oninput="globalSearchInput(this.value)">
+      <input type="text" id="globalSearch" placeholder="Search products, models &amp; brands — monitors, ECG, ventilators…" oninput="globalSearchInput(this.value)">
       <button class="icon-btn" onclick="toggleSearch()"><svg class="svgi" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
   </div>
@@ -185,16 +187,20 @@
     <div class="hero-bg" id="heroBg"></div>
     <div class="wrap">
       <div class="hero-text">
-        <span class="hero-eyebrow"><span class="dot"></span>AUTHORIZED MEDICAL EQUIPMENT DISTRIBUTOR</span>
-        <h1>Equipping India's hospitals with <span class="g">world-class medical technology</span></h1>
-        <p class="sub">From diagnostic devices to critical-care systems, Inquis Life Care Sciences delivers reliable, FDA &amp; CE-certified equipment — backed by expert support and seamless project execution.</p>
+        <span class="hero-eyebrow"><span class="dot"></span>INQUIS LIFE CARE SCIENCES LLP</span>
+        <h1><span class="h1-pre">Your trusted partner <i>in</i></span> <span class="g">Medical Equipment &amp; Healthcare Solutions</span></h1>
+        <ul class="hero-points">
+          <li><svg class="svgi" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Supplying cutting-edge medical equipment</li>
+          <li><svg class="svgi" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Expert in building new hospitals &amp; medical colleges</li>
+          <li><svg class="svgi" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>End-to-end healthcare &amp; educational infrastructure solutions</li>
+        </ul>
         <div class="hero-cta">
           <button class="btn btn-primary" onclick="go('catalog')"><svg class="svgi" viewBox="0 0 24 24"><path d="M3 3h4l2.5 13h9L21 7H6"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg>Browse Catalog</button>
           <button class="btn btn-ghost" onclick="openDrawer()">Request a Quote</button>
         </div>
         <div class="hero-trust">
           <div class="ht"><b>100+</b><span>Products &amp; Models</span></div>
-          <div class="ht"><b>24+</b><span>Global Brands</span></div>
+          <div class="ht"><b>30+</b><span>Global Brands</span></div>
           <div class="ht"><b>8</b><span>Equipment Categories</span></div>
           <div class="ht"><b>FDA·CE</b><span>Certified Range</span></div>
         </div>
@@ -203,14 +209,17 @@
     </div>
   </section>
 
-  <div class="statbar">
+  <section class="brands-sec block" id="brands" style="padding:48px 0">
     <div class="wrap">
-      <div class="stat reveal"><b>Pan-India</b><span>Delivery &amp; Installation</span></div>
-      <div class="stat reveal d1"><b>5★</b><span>Trusted by Leading Hospitals</span></div>
-      <div class="stat reveal d2"><b>End-to-End</b><span>Healthcare Solutions</span></div>
-      <div class="stat reveal d3"><b>Dedicated</b><span>After-Sales Support</span></div>
+      <div class="sec-head reveal" style="margin-bottom:30px">
+        <div class="kicker">Brands We Work With</div>
+        <h2>Authorized partner for leading brands</h2>
+        <p>Click a brand to see its products in our catalogue.</p>
+      </div>
+      <div class="brand-grid" id="brandGrid"></div>
+      <div class="brand-more reveal" id="brandMore"></div>
     </div>
-  </div>
+  </section>
 
   <section class="block">
     <div class="wrap">
@@ -236,27 +245,15 @@
     </div>
   </section>
 
-  <section class="brands-sec block" id="brands" style="padding:48px 0">
+  <div class="statbar">
     <div class="wrap">
-      <div class="sec-head reveal" style="margin-bottom:30px">
-        <div class="kicker">Brands We Work With</div>
-        <h2>Authorized partner for leading brands</h2>
-      </div>
+      <div class="stat reveal"><b>Pan-India</b><span>Delivery &amp; Installation</span></div>
+      <div class="stat reveal d1"><b>Expert</b><span>Product Demos &amp; Training</span></div>
+      <div class="stat reveal d2"><b>End-to-End</b><span>Healthcare Solutions</span></div>
+      <div class="stat reveal d3"><b>Dedicated</b><span>After-Sales Support</span></div>
     </div>
-    <div style="position:relative">
-      <div class="marquee" id="brandMarquee"></div>
-    </div>
-  </section>
+  </div>
 
-  <section class="block">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div class="kicker">Our Clients</div>
-        <h2>Trusted by Hyderabad's top hospitals</h2>
-      </div>
-      <div class="clients-grid" id="clientGrid"></div>
-    </div>
-  </section>
 
   <section class="block" style="background:#fff;border-top:1px solid var(--line)">
     <div class="wrap">
@@ -272,14 +269,14 @@
   <section class="block">
     <div class="wrap">
       <div class="cta-band reveal">
-        <svg class="dna-bg" viewBox="0 0 200 200" fill="none" stroke="#fff" stroke-width="3"><path d="M60 10c40 30-40 60 0 90s-40 60 0 90"/><path d="M140 10c-40 30 40 60 0 90s40 60 0 90"/><path d="M66 30h68M60 55h80M60 85h80M66 110h68M66 150h68M60 175h80"/></svg>
+        <div class="ecg-bg" data-amp=".42"></div>
         <div>
           <h2>Planning a new hospital or upgrading a department?</h2>
           <p>Get a tailored equipment list and competitive quote from our team. End-to-end supply, installation and support.</p>
         </div>
         <div class="cta-actions">
           <button class="btn btn-primary" onclick="openDrawer()">Start an Enquiry</button>
-          <a class="btn btn-wa" href="https://wa.me/919901141444?text=Hi%20Inquis%20Life%20Care%20Sciences%2C%20I'd%20like%20a%20quote." target="_blank"><svg class="svgi" viewBox="0 0 24 24" style="font-size:17px;stroke-width:1.6"><path d="M12 3a9 9 0 00-7.7 13.6L3 21l4.5-1.2A9 9 0 1012 3z"/><path d="M8.5 8.5c-.3 2 2.8 5.9 5 6.2.8.1 1.6-.6 1.8-1.3.1-.4-.9-.9-1.5-1.2-.4-.2-.7 0-1 .3-.2.2-.4.2-.7 0-.8-.5-1.6-1.3-2-2.2-.1-.3-.1-.5.1-.7.3-.3.6-.6.3-1.1z"/></svg>WhatsApp Us</a>
+          <a class="btn btn-wa" href="https://wa.me/918762666932?text=Hi%20Inquis%20Life%20Care%20Sciences%2C%20I'd%20like%20a%20quote." target="_blank"><svg class="svgi wa-ico" viewBox="0 0 24 24" style="font-size:17px" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>WhatsApp Us</a>
         </div>
       </div>
     </div>
@@ -302,9 +299,11 @@
         <input class="filt-search" id="catSearch" placeholder="Search products…" oninput="catSearchInput(this.value)">
         <h4><svg class="svgi" viewBox="0 0 24 24"><path d="M3 5h18M6 12h12M10 19h4"/></svg>Categories</h4>
         <div id="filterList"></div>
+        <h4 class="filt-h-brand"><svg class="svgi" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-2 7 5.5-3 5.5 3-2-7"/></svg>Brands</h4>
+        <div id="brandFilterList" class="brand-filter-list"></div>
       </aside>
       <main class="catalog-main">
-        <button class="mob-filter" onclick="toggleFilters()"><svg class="svgi" viewBox="0 0 24 24"><path d="M3 5h18M6 12h12M10 19h4"/></svg>Filter Categories</button>
+        <button class="mob-filter" onclick="toggleFilters()"><svg class="svgi" viewBox="0 0 24 24"><path d="M3 5h18M6 12h12M10 19h4"/></svg>Filter by Category &amp; Brand</button>
         <div class="toolbar">
           <div class="res-count"><b id="resCount">0</b> products <span id="activeCatWrap"></span></div>
           <select class="sort-sel" id="sortSel" onchange="renderCatalog()">
@@ -314,6 +313,7 @@
             <option value="cat">Category</option>
           </select>
         </div>
+        <div class="brand-banner" id="brandBanner" style="display:none"></div>
         <div class="prod-grid" id="catalogGrid"></div>
         <div class="empty" id="emptyState" style="display:none">
           <svg class="svgi" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -435,11 +435,12 @@
       <div class="reveal">
         <h2>More than a medical equipment company</h2>
         <p>At Inquis Life Care Sciences, we are a dedicated partner in delivering high-quality healthcare solutions. With a commitment to innovation, reliability and excellence, we have established ourselves as a leading authorised distributor and supplier of medical equipment and accessories.</p>
-        <p>We are a strong team of inquisitive doctors driven by a shared purpose: to redefine healthcare advancements and bring real-time technology to augmented patient care. From diagnostic tools to surgical equipment, rehabilitation devices to consumables — we offer a comprehensive range designed for hospitals, clinics and healthcare institutions.</p>
+        <p>We are a strong team driven by a shared purpose: to redefine healthcare advancements and bring real-time technology to augmented patient care. From diagnostic tools to surgical equipment, rehabilitation devices to consumables — we offer a comprehensive range designed for hospitals, clinics and healthcare institutions.</p>
       </div>
       <div class="reveal d1">
         <div class="mv-grid">
           <div class="mv-card mission">
+            <div class="ecg-bg" data-amp=".34"></div>
             <div class="mv-ico"><svg class="svgi" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></div>
             <h3>Our Mission</h3>
             <ul>
@@ -470,10 +471,10 @@
         <h2>Certifications &amp; registrations</h2>
         <p>Fully registered and compliant — so you can procure with confidence.</p>
       </div>
-      <div class="cert-showcase" style="max-width:760px;margin:0 auto">
-        <div class="cert-card reveal"><div class="cs-ico"><svg class="svgi" viewBox="0 0 24 24"><path d="M12 2l3 2 3-.5 1 3 2.5 1.5-1 3 1 3-2.5 1.5-1 3-3-.5-3 2-3-2-3 .5-1-3L2 15l1-3-1-3 2.5-1.5 1-3 3 .5z"/><path d="M9 12l2 2 4-4"/></svg></div><b>Certificate of Incorporation</b><span>LLP No: ACO-0747</span></div>
-        <div class="cert-card reveal d1"><div class="cs-ico"><svg class="svgi" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><b>Drug License</b><span>Telangana Drugs Control Admin.</span></div>
-        <div class="cert-card reveal d2"><div class="cs-ico"><svg class="svgi" viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 21V12h6v9"/></svg></div><b>GST Registration</b><span>GSTIN: 36AALFI4189D1Z6</span></div>
+      <div class="cert-showcase">
+        <a class="cert-frame reveal" href="img/certs/certificate-of-incorporation.jpg" target="_blank" rel="noopener"><img src="img/certs/certificate-of-incorporation.jpg" alt="Certificate of Incorporation — Inquis Life Care Sciences LLP" loading="lazy" width="972" height="1231"><b>[Certificate of Incorporation]</b><span>LLP No: ACO-0747</span></a>
+        <a class="cert-frame reveal d1" href="img/certs/drug-license.jpg" target="_blank" rel="noopener"><img src="img/certs/drug-license.jpg" alt="Drug License — Telangana Drugs Control Administration" loading="lazy" width="972" height="1231"><b>[Drug License]</b><span>Telangana Drugs Control Admin.</span></a>
+        <a class="cert-frame reveal d2" href="img/certs/gst-registration.jpg" target="_blank" rel="noopener"><img src="img/certs/gst-registration.jpg" alt="GST Registration Certificate — GSTIN 36AALFI4189D1Z6" loading="lazy" width="972" height="1231"><b>[GST Registration]</b><span>GSTIN: 36AALFI4189D1Z6</span></a>
       </div>
       <div style="text-align:center;margin-top:34px" class="reveal">
         <div style="display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center">
@@ -500,10 +501,10 @@
     <div class="wrap contact-grid">
       <div class="contact-cards">
         <div class="ct-card reveal"><div class="ct-ico"><svg class="svgi" viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a12 12 0 006 6l2-3 5 2v4a2 2 0 01-2 2A17 17 0 013 6a2 2 0 012-2z"/></svg></div><div><h4>Call Us</h4><p><a href="tel:+919901141444">+91 99011 41444</a><br><a href="tel:+918762666932">+91 87626 66932</a></p></div></div>
-        <div class="ct-card reveal d1"><div class="ct-ico"><svg class="svgi" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div><div><h4>Email</h4><p style="font-size:14px;line-height:1.6"><span style="font-size:12px;color:var(--slate);font-weight:700;display:block">Sales:</span><a href="mailto:sales@inquislifecaresciences.com">sales@inquislifecaresciences.com</a><span style="font-size:12px;color:var(--slate);font-weight:700;display:block;margin-top:6px">Support:</span><a href="mailto:support@inquislifecaresciences.com">support@inquislifecaresciences.com</a><span style="font-size:12px;color:var(--slate);font-weight:700;display:block;margin-top:6px">Direct:</span><a href="mailto:meghananarayanswamy@inquislifecaresciences.com" style="word-break:break-all">meghananarayanswamy@inquislifecaresciences.com</a></p></div></div>
+        <div class="ct-card reveal d1"><div class="ct-ico"><svg class="svgi" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div><div><h4>Email</h4><p style="font-size:14px;line-height:1.6"><span style="font-size:12px;color:var(--slate);font-weight:700;display:block">Sales:</span><a href="mailto:sales@inquislifecaresciences.com">sales@inquislifecaresciences.com</a><span style="font-size:12px;color:var(--slate);font-weight:700;display:block;margin-top:6px">Support:</span><a href="mailto:support@inquislifecaresciences.com">support@inquislifecaresciences.com</a></p></div></div>
         <div class="ct-card reveal d2"><div class="ct-ico"><svg class="svgi" viewBox="0 0 24 24"><path d="M12 21s-7-5.6-7-11a7 7 0 1114 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div><div><h4>Office</h4><p>7-1-275/E/212, Flat No: 212, Eden Apartments, Balkampet, Hyderabad, Telangana</p></div></div>
         <div class="ct-card reveal d3"><div class="ct-ico"><svg class="svgi" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div><div><h4>Registration</h4><p style="font-size:13.5px;font-weight:600">GSTIN: 36AALFI4189D1Z6 &nbsp;·&nbsp; LLP No: ACO-0747</p></div></div>
-        <a class="btn btn-wa" href="https://wa.me/919901141444?text=Hi%20Inquis%20Life%20Care%20Sciences%2C%20I%20have%20an%20enquiry." target="_blank" style="justify-content:center;padding:15px"><svg class="svgi" viewBox="0 0 24 24" style="font-size:18px;stroke-width:1.6"><path d="M12 3a9 9 0 00-7.7 13.6L3 21l4.5-1.2A9 9 0 1012 3z"/><path d="M8.5 8.5c-.3 2 2.8 5.9 5 6.2.8.1 1.6-.6 1.8-1.3.1-.4-.9-.9-1.5-1.2-.4-.2-.7 0-1 .3-.2.2-.4.2-.7 0-.8-.5-1.6-1.3-2-2.2-.1-.3-.1-.5.1-.7.3-.3.6-.6.3-1.1z"/></svg>Chat on WhatsApp</a>
+        <a class="btn btn-wa" href="https://wa.me/918762666932?text=Hi%20Inquis%20Life%20Care%20Sciences%2C%20I%20have%20an%20enquiry." target="_blank" style="justify-content:center;padding:15px"><svg class="svgi wa-ico" viewBox="0 0 24 24" style="font-size:18px" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Chat on WhatsApp</a>
       </div>
       <div class="contact-form reveal d1">
         <h3>Send us a message</h3>
@@ -556,14 +557,14 @@
 
 <!-- FOOTER -->
 <footer>
+  <div class="ecg-bg ecg-top" data-amp=".38"></div>
   <div class="wrap">
-    <svg class="footer-bg" viewBox="0 0 200 200" fill="none" stroke="#fff" stroke-width="2.5"><path d="M60 10c40 30-40 60 0 90s-40 60 0 90"/><path d="M140 10c-40 30 40 60 0 90s40 60 0 90"/><path d="M66 30h68M60 55h80M60 85h80M66 110h68M66 150h68M60 175h80"/></svg>
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="logo-mark"><b>INQUIS</b><span>LIFE CARE SCIENCES</span></div>
         <p>Your trusted partner in medical equipment, accessories &amp; consumables. Supplying cutting-edge technology and end-to-end healthcare solutions across India.</p>
         <div class="foot-social">
-          <a href="https://wa.me/919901141444" target="_blank" aria-label="WhatsApp"><svg class="svgi" viewBox="0 0 24 24" style="stroke-width:1.6"><path d="M12 3a9 9 0 00-7.7 13.6L3 21l4.5-1.2A9 9 0 1012 3z"/><path d="M8.5 8.5c-.3 2 2.8 5.9 5 6.2.8.1 1.6-.6 1.8-1.3.1-.4-.9-.9-1.5-1.2-.4-.2-.7 0-1 .3-.2.2-.4.2-.7 0-.8-.5-1.6-1.3-2-2.2-.1-.3-.1-.5.1-.7.3-.3.6-.6.3-1.1z"/></svg></a>
+          <a href="https://wa.me/918762666932" target="_blank" aria-label="WhatsApp"><svg class="svgi wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
           <a href="mailto:sales@inquislifecaresciences.com" aria-label="Email"><svg class="svgi" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></a>
           <a href="tel:+919901141444" aria-label="Phone"><svg class="svgi" viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a12 12 0 006 6l2-3 5 2v4a2 2 0 01-2 2A17 17 0 013 6a2 2 0 012-2z"/></svg></a>
         </div>
@@ -582,7 +583,7 @@
       <div class="footer-col footer-contact">
         <h4>Reach Us</h4>
         <p><svg class="svgi" viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a12 12 0 006 6l2-3 5 2v4a2 2 0 01-2 2A17 17 0 013 6a2 2 0 012-2z"/></svg>+91 99011 41444<br>+91 87626 66932</p>
-        <p><svg class="svgi" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span><a href="mailto:sales@inquislifecaresciences.com" style="display:inline;margin:0">sales@inquislifecaresciences.com</a><br><a href="mailto:support@inquislifecaresciences.com" style="display:inline;margin:0">support@inquislifecaresciences.com</a><br><a href="mailto:meghananarayanswamy@inquislifecaresciences.com" style="display:inline;margin:0;word-break:break-all">meghananarayanswamy@inquislifecaresciences.com</a></span></p>
+        <p><svg class="svgi" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span><a href="mailto:sales@inquislifecaresciences.com" style="display:inline;margin:0">sales@inquislifecaresciences.com</a><br><a href="mailto:support@inquislifecaresciences.com" style="display:inline;margin:0">support@inquislifecaresciences.com</a></span></p>
         <p><svg class="svgi" viewBox="0 0 24 24"><path d="M12 21s-7-5.6-7-11a7 7 0 1114 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>7-1-275/E/212, Flat 212, Eden Apts, Balkampet, Hyderabad, Telangana</p>
       </div>
     </div>
@@ -593,7 +594,7 @@
   </div>
 </footer>
 
-<a class="fab-wa" href="https://wa.me/919901141444?text=Hi%20Inquis%20Life%20Care%20Sciences%2C%20I'd%20like%20to%20enquire%20about%20your%20products." target="_blank" aria-label="WhatsApp"><svg class="svgi" viewBox="0 0 24 24" style="stroke-width:1.5"><path d="M12 3a9 9 0 00-7.7 13.6L3 21l4.5-1.2A9 9 0 1012 3z"/><path d="M8.5 8.5c-.3 2 2.8 5.9 5 6.2.8.1 1.6-.6 1.8-1.3.1-.4-.9-.9-1.5-1.2-.4-.2-.7 0-1 .3-.2.2-.4.2-.7 0-.8-.5-1.6-1.3-2-2.2-.1-.3-.1-.5.1-.7.3-.3.6-.6.3-1.1z"/></svg></a>
+<a class="fab-wa" href="https://wa.me/918762666932?text=Hi%20Inquis%20Life%20Care%20Sciences%2C%20I'd%20like%20to%20enquire%20about%20your%20products." target="_blank" aria-label="WhatsApp"><svg class="svgi wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
 
 <div class="toast-wrap" id="toastWrap"></div>
 
